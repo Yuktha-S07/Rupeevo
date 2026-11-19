@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  <section class="card profile-header" style="margin-bottom: 18px;">
+    <span class="avatar avatar-emerald">{{ sample.user.initials }}</span>
+    <div>
+      <h2>{{ sample.user.name }}</h2>
+      <p class="muted">{{ sample.user.email }}</p>
+      <p class="small muted" style="margin-top: 6px;">Member since {{ sample.user.member_since }}</p>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 8px;">
+      <span class="badge badge-emerald">{{ icon('shield', 12) }} Verified</span>
+      <button class="btn btn-outline btn-sm" type="button">Edit profile</button>
+    </div>
+  </section>
+
+  <div class="two-column">
+    <section class="card">
+      <div class="card-header"><div><h3>Personal information</h3><p>Details linked to your account</p></div></div>
+      <div class="form-section">
+        <div class="form-grid">
+          <div class="field">
+            <label for="full-name">Full name</label>
+            <input id="full-name" class="form-control" value="{{ sample.user.name }}" />
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input id="email" class="form-control" value="{{ sample.user.email }}" type="email" />
+          </div>
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input id="phone" class="form-control" value="+91 98765 43210" />
+          </div>
+          <div class="field">
+            <label for="city">City</label>
+            <input id="city" class="form-control" value="Bengaluru, India" />
+          </div>
+          <div class="field field-full">
+            <label for="bio">Short bio</label>
+            <textarea id="bio" class="form-control" rows="3">Building better money habits, one rupee at a time.</textarea>
+          </div>
+        </div>
+        <button class="btn btn-sm" type="button">Save changes</button>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card-header"><div><h3>Account overview</h3><p>Your Rupeevo snapshot</p></div></div>
+        <div class="card-body" style="padding-top: 4px;">
+          <div class="setting-row"><div><strong>Linked accounts</strong><small>Banks and wallets</small></div><span class="strong">4</span></div>
+          <div class="setting-row"><div><strong>Tracked transactions</strong><small>This month</small></div><span class="strong">{{ sample.transactions|length }}</span></div>
+          <div class="setting-row"><div><strong>Active goals</strong><small>Savings milestones</small></div><span class="strong">{{ sample.goals|length }}</span></div>
+          <div class="setting-row"><div><strong>Member since</strong><small>Playing the long game</small></div><span class="strong">{{ sample.user.member_since }}</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div><h3>Recent activity</h3><p>What changed lately</p></div></div>
+        <div class="card-body" style="padding-top: 4px;">
+          <div class="setting-row"><div><strong>Account verified</strong><small>12 Nov 2026</small></div>{{ badge('Done', 'emerald') }}</div>
+          <div class="setting-row"><div><strong>Goal created · Japan Trip</strong><small>08 Nov 2026</small></div>{{ badge('Done', 'neutral') }}</div>
+          <div class="setting-row"><div><strong>HDFC Bank linked</strong><small>02 Nov 2026</small></div>{{ badge('Done', 'neutral') }}</div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}

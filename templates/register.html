@@ -1,0 +1,88 @@
+{% extends "auth_base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Create account{% endblock %}
+
+{% block aside_content %}
+<h1>Start making every rupee count.</h1>
+<p>One calm home for your cash, accounts, UPI activity, budgets and savings goals.</p>
+<div class="auth-highlights">
+  <span>{{ icon('check', 15) }} Free to use</span>
+  <span>{{ icon('check', 15) }} Built for India</span>
+  <span>{{ icon('check', 15) }} Your data stays yours</span>
+</div>
+{% endblock %}
+
+{% block auth_content %}
+<span class="eyebrow">{{ icon('sparkles', 13) }} Get started</span>
+<h2>Create your account</h2>
+<p class="auth-subtitle">A minute of setup, a lifetime of clarity.</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <p class="flash flash-{{ category }}" role="alert">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+
+  <div class="field">
+    {{ form.full_name.label }}
+    {{ form.full_name(autocomplete="name", placeholder="Aarav Sharma", aria_describedby="full_name-error", aria_invalid="true" if form.full_name.errors else "false") }}
+    <span id="full_name-error" class="error" role="alert">{% for error in form.full_name.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field">
+    {{ form.email.label }}
+    {{ form.email(type="email", autocomplete="email", placeholder="you@example.com", aria_describedby="email-error", aria_invalid="true" if form.email.errors else "false") }}
+    <span id="email-error" class="error" role="alert">{% for error in form.email.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field">
+    {{ form.mobile.label }}
+    {{ form.mobile(type="tel", autocomplete="tel", placeholder="98765 43210", aria_describedby="mobile-error", aria_invalid="true" if form.mobile.errors else "false") }}
+    <span id="mobile-error" class="error" role="alert">{% for error in form.mobile.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field">
+    {{ form.password.label }}
+    <div class="password-field">
+      {{ form.password(autocomplete="new-password", placeholder="At least 8 characters", aria_describedby="password-error", aria_invalid="true" if form.password.errors else "false") }}
+      <button class="password-toggle" type="button" data-target="password" aria-label="Show password" aria-pressed="false">Show</button>
+    </div>
+    <span id="password-error" class="error" role="alert">{% for error in form.password.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field">
+    {{ form.confirm_password.label }}
+    <div class="password-field">
+      {{ form.confirm_password(autocomplete="new-password", placeholder="Repeat your password", aria_describedby="confirm_password-error", aria_invalid="true" if form.confirm_password.errors else "false") }}
+      <button class="password-toggle" type="button" data-target="confirm_password" aria-label="Show password" aria-pressed="false">Show</button>
+    </div>
+    <span id="password-match" class="match-hint small" hidden></span>
+    <span id="confirm_password-error" class="error" role="alert">{% for error in form.confirm_password.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field check-field">
+    <label class="check-row">
+      {{ form.terms(aria_describedby="terms-error", aria_invalid="true" if form.terms.errors else "false") }}
+      <span>I agree to the <a href="{{ url_for('main.terms') }}" target="_blank" rel="noopener">Terms and Conditions</a>.</span>
+    </label>
+    <span id="terms-error" class="error" role="alert">{% for error in form.terms.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  {{ form.submit(class="btn auth-submit") }}
+</form>
+
+<div class="auth-divider"><span>Already have an account?</span></div>
+<p class="auth-switch">Your dashboard is waiting. <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %}

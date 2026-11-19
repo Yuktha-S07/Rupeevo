@@ -1,0 +1,96 @@
+{% from "_macros.html" import icon %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ page_title }} · Rupeevo</title>
+    <meta name="description" content="Rupeevo — Making Every Rupee Count. Personal finance, cash, accounts, budgets and goals in one place." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body class="app-body">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+        <div class="sidebar-brand">
+          <a href="{{ url_for('main.index') }}" class="brand-lockup">
+            <span class="brand-mark">₹</span>
+            <span class="brand-text">Rupeevo<small>Making Every Rupee Count</small></span>
+          </a>
+        </div>
+
+        <nav class="sidebar-nav">
+          <p class="nav-label">Workspace</p>
+          <ul>
+            {% for item in nav_items %}
+            <li>
+              <a href="{{ url_for(item.endpoint) }}" class="nav-link {{ 'active' if page_id == item.id else '' }}" {{ 'aria-current=page' if page_id == item.id else '' }}>
+                <span class="nav-icon">{{ icon(item.icon, 19) }}</span>
+                <span>{{ item.label }}</span>
+                {% if page_id == item.id %}<span class="nav-active-dot"></span>{% endif %}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="{{ url_for('main.profile') }}" class="sidebar-user">
+            <span class="avatar avatar-emerald">{{ session.get('user_name', sample.user.name).split(' ')[0][:1] + session.get('user_name', sample.user.name).split(' ')[-1][:1] }}</span>
+            <span class="sidebar-user-text">
+              <strong>{{ session.get('user_name', sample.user.name) }}</strong>
+              <small>{{ sample.user.email }}</small>
+            </span>
+          </a>
+          <div class="sidebar-auth-link">
+            {% if session.get('user_id') %}
+              <a href="{{ url_for('auth.logout') }}">Sign out</a>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}">Sign in</a>
+            {% endif %}
+          </div>
+        </div>
+      </aside>
+
+      <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+
+      <div class="main-column">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="icon-button menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-expanded="false">
+              {{ icon('menu', 21) }}
+            </button>
+            <div class="topbar-title">
+              <span>Welcome back, {{ session.get('user_name', sample.user.name).split(' ')[0] }}</span>
+              <small>{{ current_date }}</small>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <label class="search-box">
+              {{ icon('search', 18) }}
+              <input type="search" placeholder="Search transactions, accounts..." aria-label="Search" />
+              <kbd>Ctrl K</kbd>
+            </label>
+            <button class="icon-button notification-button" type="button" aria-label="Notifications">
+              {{ icon('bell', 20) }}
+              <span class="notification-dot"></span>
+            </button>
+            <a href="{{ url_for('main.profile') }}" class="topbar-avatar avatar avatar-emerald" aria-label="Your profile">{{ sample.user.initials }}</a>
+          </div>
+        </header>
+
+        <main class="content">
+          {% block content %}{% endblock %}
+        </main>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

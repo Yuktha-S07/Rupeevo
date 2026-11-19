@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge, progress, stat %}
+
+{% block content %}
+  <div class="page-header dashboard-page-header">
+    <div>
+      <p class="dashboard-eyebrow">Financial overview</p>
+      <h1>Welcome back, {{ session.get('user_name', sample.user.name).split(' ')[0] }}</h1>
+      <p>{{ current_date }} · Here is your money at a glance.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-sm" href="{{ url_for('main.transactions') }}">{{ icon('plus', 15) }} Add transaction</a>
+    </div>
+  </div>
+
+  <div class="dashboard-stats-grid">
+    <article class="stat-card balance-stat">
+      <div class="stat-top">
+        <span class="stat-icon">{{ icon('wallet', 20) }}</span>
+        <span class="stat-change positive">{{ icon('arrow-up', 13) }} {{ sample.summary.income_change }}%</span>
+      </div>
+      <p class="stat-label">Total Available Balance</p>
+      <p class="stat-value">{{ sample.summary.balance|inr }}</p>
+      <p class="stat-note">Cash + online money</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-amber">{{ icon('wallet', 20) }}</span></div>
+      <p class="stat-label">Physical Cash</p>
+      <p class="stat-value">{{ sample.summary.physical_cash|inr }}</p>
+      <p class="stat-note">In hand</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-blue">{{ icon('bank', 20) }}</span></div>
+      <p class="stat-label">Total Online Bank Balance</p>
+      <p class="stat-value">{{ sample.summary.online_balance|inr }}</p>
+      <p class="stat-note">Across 4 accounts</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-icon stat-icon-blue">{{ icon('trend', 20) }}</span>
+        <span class="stat-change positive">{{ icon('arrow-up', 13) }} {{ sample.summary.income_change }}%</span>
+      </div>
+      <p class="stat-label">Total Income</p>
+      <p class="stat-value">{{ sample.summary.income|inr }}</p>
+      <p class="stat-note">This month</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-icon stat-icon-amber">{{ icon('bag', 20) }}</span>
+        <span class="stat-change negative">{{ icon('arrow-down', 13) }} {{ sample.summary.expense_change|abs }}%</span>
+      </div>
+      <p class="stat-label">Total Expenses</p>
+      <p class="stat-value">{{ sample.summary.expenses|inr }}</p>
+      <p class="stat-note">This month</p>
+    </article>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>Income vs Expenses</h3>
+          <p>Income and expenses over the last six months</p>
+        </div>
+        <span class="badge badge-emerald">Healthy</span>
+      </div>
+      <div class="chart-wrap"><canvas id="incomeExpenseChart"></canvas></div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch"></span> Income</span>
+        <span class="legend-item"><span class="legend-swatch blue"></span> Expenses</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>Cash vs Digital Spending</h3>
+          <p>How this month's expenses were paid</p>
+        </div>
+      </div>
+      <div class="cash-digital-layout">
+        <div class="chart-wrap chart-wrap-donut"><canvas id="cashDigitalChart"></canvas></div>
+        <div class="cash-digital-summary">
+          <div><span class="legend-swatch"></span><p>Digital <strong>₹46,800</strong></p></div>
+          <div><span class="legend-swatch amber"></span><p>Physical cash <strong>₹12,140</strong></p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="dashboard-grid dashboard-mid-grid">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Monthly Spending Overview</h3><p>Monthly expense trend</p></div>
+      </div>
+      <div class="chart-wrap chart-wrap-sm"><canvas id="monthlySpendingChart"></canvas></div>
+    </section>
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Category-wise Expenses</h3><p>Where your money went this month</p></div>
+      </div>
+      <div class="category-layout">
+        <div class="chart-wrap chart-wrap-donut"><canvas id="spendingDonut"></canvas></div>
+        <div class="category-legend">
+          {% for category in ['Food', 'Shopping', 'Transport', 'Utilities', 'Other'] %}
+          <span class="category-legend-item"><span class="legend-swatch {{ 'blue' if loop.index == 2 else 'violet' if loop.index == 3 else 'amber' if loop.index == 4 else '' }}" style="{{ 'background:var(--rose)' if loop.index == 5 else '' }}"></span>{{ category }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {% set remaining_budget = 0 %}
+  {% for item in sample.budgets %}
+    {% set remaining_budget = remaining_budget + (item.limit - item.spent) %}
+  {% endfor %}
+  {% set total_limit = 36000 %}
+  {% set budget_used = 25040 %}
+  <div class="two-column" style="margin-top: 18px;">
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>Recent transactions</h3>
+          <p>Your latest money movement</p>
+        </div>
+        <a class="text-link" href="{{ url_for('main.transactions') }}">View all {{ icon('chevron-right', 13) }}</a>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>Transaction</th><th>Date</th><th class="align-right">Amount</th></tr>
+          </thead>
+          <tbody>
+            {% for tx in sample.transactions[:5] %}
+            <tr>
+              <td>
+                <div class="tx-name">
+                  <span class="tx-icon {{ 'blue' if tx.type == 'income' else '' }}">{{ icon(tx.icon, 17) }}</span>
+                  <span><strong>{{ tx.name }}</strong><small>{{ tx.category }} · {{ tx.method }}</small></span>
+                </div>
+              </td>
+              <td class="muted">{{ tx.date }}</td>
+              <td class="align-right amount {{ 'amount-income' if tx.type == 'income' else '' }}">
+                {{ '+' if tx.type == 'income' else '−' }} {{ tx.amount|inr }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>Remaining Monthly Budget</h3>
+          <p>November 2026</p>
+        </div>
+        <a class="text-link" href="{{ url_for('main.budgets') }}">Manage {{ icon('chevron-right', 13) }}</a>
+      </div>
+      <div class="card-body" style="padding-top: 6px;">
+        <div class="budget-summary">
+          <div><span>Spent</span><strong>{{ budget_used|inr }}</strong></div>
+          <div><span>Remaining</span><strong class="positive-text">{{ (total_limit - budget_used)|inr }}</strong></div>
+        </div>
+        {% for item in sample.budgets[:4] %}
+        {% set pct = item.spent|percent(item.limit) %}
+        <div class="budget-row">
+          <div class="budget-head">
+            <span class="tx-icon {{ item.color }}">{{ icon(item.icon, 16) }}</span>
+            <strong>{{ item.category }}</strong>
+            <span class="amount">{{ item.spent|inr }} <span class="muted">/ {{ item.limit|inr }}</span></span>
+          </div>
+          {{ progress(item.spent, item.limit, item.color) }}
+          <div class="budget-meta"><span>{{ pct }}% used</span><span>{{ (item.limit - item.spent)|inr }} left</span></div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div class="two-column" style="margin-top: 18px;">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Savings goals</h3><p>Small steps, big milestones</p></div>
+        <a class="text-link" href="{{ url_for('main.goals') }}">All goals {{ icon('chevron-right', 13) }}</a>
+      </div>
+      <div class="card-body">
+        <div class="goal-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+          {% for goal in sample.goals[:2] %}
+          {% set pct = goal.saved|percent(goal.target) %}
+          <div>
+            <div class="goal-top">
+              <span class="tx-icon {{ goal.color }}">{{ icon(goal.icon, 18) }}</span>
+              <div class="goal-ring" style="--pct: {{ pct }};"><span>{{ pct }}%</span></div>
+            </div>
+            <h3>{{ goal.name }}</h3>
+            <p class="goal-amount">{{ goal.saved|inr }}</p>
+            <p class="goal-deadline">{{ icon('calendar', 13) }} Target {{ goal.deadline }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Coming up</h3><p>Recurring payments ahead</p></div>
+        <a class="text-link" href="{{ url_for('main.recurring') }}">Manage {{ icon('chevron-right', 13) }}</a>
+      </div>
+      <div class="card-body" style="padding-top: 6px;">
+        {% for item in sample.recurring[:3] %}
+        <div class="setting-row">
+          <div class="tx-name">
+            <span class="tx-icon {{ 'amber' if not item.auto else '' }}">{{ icon(item.icon, 17) }}</span>
+            <span><strong>{{ item.name }}</strong><small>{{ item.due }} · {{ item.category }}</small></span>
+          </div>
+          <span class="amount">{{ item.amount|inr }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <section class="card dashboard-insights" style="margin-top: 18px;">
+    <div class="card-header">
+      <div><h3>Smart Financial Insights</h3><p>Personal observations based on your recent activity</p></div>
+      <a class="text-link" href="{{ url_for('main.insights') }}">View insights {{ icon('chevron-right', 13) }}</a>
+    </div>
+    <div class="insight-grid dashboard-insight-grid">
+      {% for insight in sample.insights[:3] %}
+      <article class="insight-card {{ 'insight-warning' if insight.tone == 'warning' else 'insight-info' if insight.tone == 'info' else '' }}">
+        <span class="insight-icon">{{ icon(insight.icon, 19) }}</span>
+        <div><h3>{{ insight.title }}</h3><p>{{ insight.text }}</p></div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

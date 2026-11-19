@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Reports &amp; Analytics</h1>
+      <p>Understand the patterns behind your money</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" type="button">{{ icon('calendar', 15) }} Last 6 months</button>
+      <button class="btn btn-sm" type="button">{{ icon('download', 15) }} Download report</button>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon">{{ icon('trend', 20) }}</span><span class="stat-change">{{ icon('arrow-up', 13) }} 12.4%</span></div>
+      <p class="stat-label">Average monthly income</p>
+      <p class="stat-value">{{ 124000|inr }}</p>
+      <p class="stat-note">Last 6 months</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-amber">{{ icon('bag', 20) }}</span><span class="stat-change negative">{{ icon('arrow-down', 13) }} 6.8%</span></div>
+      <p class="stat-label">Average monthly spend</p>
+      <p class="stat-value">{{ 60623|inr }}</p>
+      <p class="stat-note">Last 6 months</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-violet">{{ icon('target', 20) }}</span><span class="stat-change">{{ icon('arrow-up', 13) }} 18.2%</span></div>
+      <p class="stat-label">Savings rate</p>
+      <p class="stat-value">28%</p>
+      <p class="stat-note">Up from 24% last quarter</p>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Income vs expenses</h3><p>Monthly comparison, in rupees</p></div>
+      </div>
+      <div class="chart-wrap"><canvas id="incomeExpenseChart"></canvas></div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch"></span> Income</span>
+        <span class="legend-item"><span class="legend-swatch" style="background: var(--emerald-200);"></span> Expenses</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Savings trend</h3><p>How your buffer is growing</p></div>
+        <span class="badge badge-emerald">+18.2%</span>
+      </div>
+      <div class="chart-wrap"><canvas id="savingsTrendChart"></canvas></div>
+      <div class="chart-legend"><span class="legend-item"><span class="legend-swatch"></span> Saved each month</span></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top: 18px;">
+    <div class="card-header">
+      <div><h3>Monthly breakdown</h3><p>The numbers behind the charts</p></div>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Saved</th><th>Savings rate</th><th class="align-right">Trend</th></tr></thead>
+        <tbody>
+          {% set rows = [
+            ('November 2026', 132500, 58940, 73560),
+            ('October 2026', 128000, 63200, 64800),
+            ('September 2026', 124000, 59800, 64200),
+            ('August 2026', 120500, 61200, 59300),
+            ('July 2026', 118000, 58400, 59600),
+            ('June 2026', 112000, 62000, 50000)
+          ] %}
+          {% for month, income, expense, saved in rows %}
+          <tr>
+            <td class="strong">{{ month }}</td>
+            <td class="amount-income">{{ income|inr }}</td>
+            <td>{{ expense|inr }}</td>
+            <td class="amount">{{ saved|inr }}</td>
+            <td>{{ saved|percent(income) }}%</td>
+            <td class="align-right">{{ badge('Healthy', 'emerald') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

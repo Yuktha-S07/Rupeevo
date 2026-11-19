@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Bank Accounts</h1>
+      <p>All your accounts in one place — balances, types and connections</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-sm" type="button">{{ icon('plus', 15) }} Link account</button>
+    </div>
+  </div>
+
+  <div class="account-grid" style="margin-bottom: 18px;">
+    {% for account in sample.accounts %}
+    <article class="account-card">
+      <div class="account-head">
+        <div class="account-title">
+          <span class="avatar {{ account.color }}">{{ icon('bank', 18) }}</span>
+          <span><strong>{{ account.name }}</strong><small>{{ account.type }}</small></span>
+        </div>
+        {{ badge('Primary', 'emerald') if account.primary else badge('Active', 'neutral') }}
+      </div>
+      <p class="account-balance">{{ account.balance|inr }}</p>
+      <div class="account-meta">
+        <span>{{ account.number }}</span>
+        <span>{{ icon('check', 12) }} Connected</span>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <section class="card">
+    <div class="card-header">
+      <div><h3>Account activity</h3><p>Latest credits and debits across accounts</p></div>
+      <button class="btn btn-outline btn-sm" type="button">{{ icon('download', 15) }} Export</button>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Transaction</th><th>Account</th><th>Date</th><th>Status</th><th class="align-right">Amount</th></tr></thead>
+        <tbody>
+          {% for tx in sample.transactions[:6] %}
+          <tr>
+            <td>
+              <div class="tx-name">
+                <span class="tx-icon {{ 'blue' if tx.type == 'income' else '' }}">{{ icon(tx.icon, 17) }}</span>
+                <span><strong>{{ tx.name }}</strong><small>{{ tx.category }}</small></span>
+              </div>
+            </td>
+            <td class="muted">{{ sample.accounts[loop.index0 % 4].name }}</td>
+            <td class="muted">{{ tx.date }}</td>
+            <td>{{ badge(tx.status, 'success') }}</td>
+            <td class="align-right amount {{ 'amount-income' if tx.type == 'income' else '' }}">
+              {{ '+' if tx.type == 'income' else '−' }} {{ tx.amount|inr }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

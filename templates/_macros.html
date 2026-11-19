@@ -1,0 +1,134 @@
+{% macro icon(name, size=20) -%}
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{%- if name == 'grid' %}
+  <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+{%- elif name == 'swap' %}
+  <path d="M7 7h13"/><path d="m17 4 3 3-3 3"/><path d="M17 17H4"/><path d="m7 14-3 3 3 3"/>
+{%- elif name == 'wallet' %}
+  <path d="M20 7H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/><path d="M4 9V5a2 2 0 0 1 2-2h12"/><path d="M16 13h3"/>
+{%- elif name == 'bank' %}
+  <path d="m3 10 9-6 9 6"/><path d="M5 10v9"/><path d="M19 10v9"/><path d="M9 10v9"/><path d="M15 10v9"/><path d="M3 21h18"/>
+{%- elif name == 'pie' %}
+  <path d="M21 12A9 9 0 1 1 12 3v9Z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15Z"/>
+{%- elif name == 'chart' %}
+  <path d="M4 20V11"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>
+{%- elif name == 'target' %}
+  <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>
+{%- elif name == 'repeat' %}
+  <path d="m17 2 4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+{%- elif name == 'sparkles' %}
+  <path d="m12 3 1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8L12 3Z"/><path d="m19 15 .7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8Z"/>
+{%- elif name == 'settings' %}
+  <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1H21v4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>
+{%- elif name == 'user' %}
+  <circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+{%- elif name == 'search' %}
+  <circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>
+{%- elif name == 'bell' %}
+  <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>
+{%- elif name == 'menu' %}
+  <path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>
+{%- elif name == 'plus' %}
+  <path d="M12 5v14"/><path d="M5 12h14"/>
+{%- elif name == 'chevron-down' %}
+  <path d="m6 9 6 6 6-6"/>
+{%- elif name == 'chevron-right' %}
+  <path d="m9 6 6 6-6 6"/>
+{%- elif name == 'arrow-up' %}
+  <path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>
+{%- elif name == 'arrow-down' %}
+  <path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>
+{%- elif name == 'download' %}
+  <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+{%- elif name == 'filter' %}
+  <path d="M4 5h16l-6 8v6l-4 2v-8Z"/>
+{%- elif name == 'utensils' %}
+  <path d="M4 3v7a3 3 0 0 0 6 0V3"/><path d="M7 3v18"/><path d="M17 3c-2 2-3 5-3 9h6c0-4-1-7-3-9Z"/><path d="M17 12v9"/>
+{%- elif name == 'briefcase' %}
+  <rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>
+{%- elif name == 'send' %}
+  <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+{%- elif name == 'bag' %}
+  <path d="M6 8h12l1 13H5Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>
+{%- elif name == 'bolt' %}
+  <path d="M13 2 4 14h7l-1 8 9-12h-7Z"/>
+{%- elif name == 'trend' %}
+  <path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>
+{%- elif name == 'play' %}
+  <rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3Z"/>
+{%- elif name == 'car' %}
+  <path d="M5 17h14"/><path d="M6 17v2"/><path d="M18 17v2"/><path d="m4 13 2-6h12l2 6v4H4Z"/><path d="M7.5 15h.01"/><path d="M16.5 15h.01"/>
+{%- elif name == 'shield' %}
+  <path d="M12 3 4 6v5c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/>
+{%- elif name == 'plane' %}
+  <path d="M21 3 3 10l7 3 3 7Z"/><path d="m10 13 11-10"/>
+{%- elif name == 'laptop' %}
+  <rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 20h20"/>
+{%- elif name == 'home' %}
+  <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M9 21v-7h6v7"/>
+{%- elif name == 'heart' %}
+  <path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1Z"/>
+{%- elif name == 'alert' %}
+  <path d="M12 3 2 20h20Z"/><path d="M12 9v5"/><path d="M12 17h.01"/>
+{%- elif name == 'check' %}
+  <path d="m5 12 5 5L20 7"/>
+{%- elif name == 'x' %}
+  <path d="M6 6l12 12"/><path d="M18 6 6 18"/>
+{%- elif name == 'calendar' %}
+  <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 10h18"/>
+{%- elif name == 'copy' %}
+  <rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+{%- elif name == 'phone' %}
+  <rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>
+{%- elif name == 'lock' %}
+  <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+{%- elif name == 'mail' %}
+  <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>
+{%- elif name == 'logout' %}
+  <path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 12a9 9 0 1 1-9-9"/>
+{%- else %}
+  <circle cx="12" cy="12" r="9"/>
+{%- endif %}
+</svg>
+{%- endmacro %}
+
+
+{% macro badge(text, tone='neutral') -%}
+<span class="badge badge-{{ tone }}">{{ text }}</span>
+{%- endmacro %}
+
+
+{% macro progress(value, maximum, color='emerald') -%}
+{% set raw = ((value / maximum * 100) | round | int) if maximum else 0 %}
+{% set width = raw if raw < 100 else 100 %}
+<div class="progress" role="progressbar" aria-valuenow="{{ raw }}" aria-valuemin="0" aria-valuemax="100">
+  <span class="progress-fill progress-{{ color }}" style="width: {{ width }}%"></span>
+</div>
+{%- endmacro %}
+
+
+{% macro stat(label, value, change, icon_name, tone='emerald', note='vs last month') -%}
+<div class="stat-card">
+  <div class="stat-top">
+    <span class="stat-icon stat-icon-{{ tone }}">{{ icon(icon_name, 20) }}</span>
+    <span class="stat-change {{ 'positive' if change > 0 else 'negative' }}">
+      {{ icon('arrow-up', 13) if change > 0 else icon('arrow-down', 13) }}
+      {{ change|abs }}%
+    </span>
+  </div>
+  <p class="stat-label">{{ label }}</p>
+  <p class="stat-value">{{ value|inr }}</p>
+  <p class="stat-note">{{ note }}</p>
+</div>
+{%- endmacro %}
+
+
+{% macro page_header(title, subtitle, action='') -%}
+<div class="page-header">
+  <div>
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+  </div>
+  {% if action %}<div class="page-actions">{{ action }}</div>{% endif %}
+</div>
+{%- endmacro %}

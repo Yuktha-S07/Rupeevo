@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  {% set monthly_total = sample.recurring|sum(attribute='amount') %}
+  {% set auto_total = sample.recurring|selectattr('auto')|sum(attribute='amount') %}
+
+  <div class="page-header">
+    <div>
+      <h1>Recurring Payments</h1>
+      <p>Subscriptions, bills and auto-payments — never be caught off guard</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-sm" type="button">{{ icon('plus', 15) }} Add payment</button>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon">{{ icon('repeat', 20) }}</span></div>
+      <p class="stat-label">Monthly commitments</p>
+      <p class="stat-value">{{ monthly_total|inr }}</p>
+      <p class="stat-note">Across {{ sample.recurring|length }} payments</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-violet">{{ icon('bolt', 20) }}</span></div>
+      <p class="stat-label">On auto-pay</p>
+      <p class="stat-value">{{ auto_total|inr }}</p>
+      <p class="stat-note">Handled automatically</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-amber">{{ icon('calendar', 20) }}</span></div>
+      <p class="stat-label">Due in next 10 days</p>
+      <p class="stat-value">{{ 31900|inr }}</p>
+      <p class="stat-note">3 payments coming up</p>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="card-header">
+      <div><h3>All recurring payments</h3><p>Toggle auto-pay or edit any payment</p></div>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Payment</th><th>Category</th><th>Next due</th><th>Auto-pay</th><th>Status</th><th class="align-right">Amount</th></tr></thead>
+        <tbody>
+          {% for item in sample.recurring %}
+          <tr>
+            <td>
+              <div class="tx-name">
+                <span class="tx-icon {{ 'amber' if not item.auto else '' }}">{{ icon(item.icon, 17) }}</span>
+                <span><strong>{{ item.name }}</strong><small>Monthly</small></span>
+              </div>
+            </td>
+            <td class="muted">{{ item.category }}</td>
+            <td class="muted">{{ item.due }}</td>
+            <td>
+              <label class="toggle">
+                <input type="checkbox" {{ 'checked' if item.auto else '' }} aria-label="Auto-pay for {{ item.name }}" />
+                <span class="toggle-slider"></span>
+              </label>
+            </td>
+            <td>{{ badge('Auto', 'emerald') if item.auto else badge('Manual', 'warning') }}</td>
+            <td class="align-right amount">{{ item.amount|inr }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top: 18px;">
+    <div class="card-body" style="display: flex; gap: 14px; align-items: flex-start;">
+      <span class="insight-icon">{{ icon('sparkles', 19) }}</span>
+      <div>
+        <h3 style="font-size: 13px;">A gentle reminder</h3>
+        <p class="small muted" style="margin-top: 4px;">Your Netflix payment is due on 18 Nov. Keeping auto-pay on means one less thing to remember this week.</p>
+      </div>
+    </div>
+  </section>
+{% endblock %}

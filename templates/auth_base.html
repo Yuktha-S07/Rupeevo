@@ -1,0 +1,61 @@
+{% from "_macros.html" import icon %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Rupeevo{% endblock %} · Rupeevo</title>
+    <meta name="description" content="Rupeevo — Making Every Rupee Count. Sign in, register or reset your password." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
+  </head>
+  <body class="auth-body">
+    <div class="auth-shell">
+      <aside class="auth-aside">
+        <a href="{{ url_for('main.index') }}" class="brand-lockup">
+          <span class="brand-mark">₹</span>
+          <span class="brand-text">Rupeevo<small>Making Every Rupee Count</small></span>
+        </a>
+
+        <div class="auth-visual" aria-hidden="true">
+          <div class="auth-visual-card">
+            <div class="visual-card-top">
+              <span>Total balance</span>
+              <span class="visual-chip">{{ icon('arrow-up', 12) }} 12.4%</span>
+            </div>
+            <strong class="visual-balance">₹2,48,560</strong>
+            <div class="visual-bars">
+              <span style="height: 38%"></span><span style="height: 62%"></span>
+              <span style="height: 48%"></span><span style="height: 78%"></span>
+              <span style="height: 66%"></span><span style="height: 92%"></span>
+            </div>
+            <div class="visual-card-foot">{{ icon('shield', 13) }} Protected by Rupeevo</div>
+          </div>
+          <span class="visual-coin visual-coin-one">₹</span>
+          <span class="visual-coin visual-coin-two">{{ icon('trend', 19) }}</span>
+        </div>
+
+        <div class="auth-aside-copy">
+          {% block aside_content %}
+          <h1>Your money deserves a clearer picture.</h1>
+          <p>Bring cash, accounts, budgets and goals into one calm place.</p>
+          {% endblock %}
+        </div>
+
+        <p class="small auth-copyright">© 2026 Rupeevo · Making Every Rupee Count</p>
+      </aside>
+
+      <main class="auth-main">
+        <section class="auth-card">
+          {% block auth_content %}{% endblock %}
+        </section>
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

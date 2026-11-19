@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Cash Management</h1>
+      <p>Your physical wallet, tracked separately from bank and UPI money</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" id="historyBtn" type="button">{{ icon('calendar', 15) }} View Cash History</button>
+      <button class="btn btn-outline btn-sm" id="updateActualBtn" type="button">{{ icon('copy', 15) }} Update Actual Balance</button>
+      <button class="btn btn-outline btn-sm" id="addExpenseBtn" type="button">{{ icon('arrow-up', 15) }} Add Cash Expense</button>
+      <button class="btn btn-sm" id="addIncomeBtn" type="button">{{ icon('plus', 15) }} Add Cash Income</button>
+    </div>
+  </div>
+
+  <section class="wallet-hero">
+    <div class="wallet-hero-copy">
+      <span class="eyebrow eyebrow-light">{{ icon('wallet', 14) }} Physical wallet</span>
+      <h2>Current expected cash balance</h2>
+      <p class="wallet-balance" id="expectedBalance">₹0.00</p>
+      <p class="wallet-meta">Calculated from your opening balance and recorded cash movements.</p>
+      <div class="wallet-hero-actions">
+        <button class="btn btn-soft btn-sm" type="button" id="heroAddIncome">{{ icon('plus', 14) }} Cash received</button>
+        <button class="btn btn-outline-light btn-sm" type="button" id="heroAddExpense">{{ icon('arrow-up', 14) }} Cash spent</button>
+      </div>
+    </div>
+    <div class="wallet-visual" aria-hidden="true">
+      <div class="wallet-card-stack"></div>
+      <div class="wallet-body">
+        <div class="wallet-flap"></div>
+        <div class="wallet-clasp"></div>
+        <span class="wallet-rupee">₹</span>
+      </div>
+      <span class="wallet-spark wallet-spark-one"></span>
+      <span class="wallet-spark wallet-spark-two"></span>
+    </div>
+  </section>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 18px;">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon">{{ icon('arrow-down', 20) }}</span></div>
+      <p class="stat-label">Total cash received</p>
+      <p class="stat-value text-emerald" id="totalReceived">₹0.00</p>
+      <p class="stat-note">Recorded additions to your wallet</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-rose">{{ icon('arrow-up', 20) }}</span></div>
+      <p class="stat-label">Total cash spent</p>
+      <p class="stat-value" id="totalSpent">₹0.00</p>
+      <p class="stat-note">Recorded spending from your wallet</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-violet">{{ icon('calendar', 20) }}</span></div>
+      <p class="stat-label">Last counted</p>
+      <p class="stat-value" style="font-size: 18px;">{{ sample.cash.last_counted }}</p>
+      <p class="stat-note">Keep counting regularly to stay accurate</p>
+    </div>
+  </div>
+
+  <div class="two-column" style="margin-top: 18px;">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Recent cash transactions</h3><p>Only physical cash movements appear here</p></div>
+        <button class="text-link" type="button" id="recentViewAll">View all {{ icon('chevron-right', 13) }}</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Description</th><th>Date</th><th class="align-right">Amount</th></tr></thead>
+          <tbody id="recentCashRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card reconciliation-card">
+      <div class="card-header">
+        <div><h3>Cash reconciliation</h3><p>Compare what you expect with what is in your wallet</p></div>
+      </div>
+      <div class="card-body">
+        <div class="recon-row">
+          <span>Expected cash</span>
+          <strong id="recExpected">₹0.00</strong>
+        </div>
+        <div class="recon-row">
+          <span>Actual cash in wallet</span>
+          <strong id="recActual">₹0.00</strong>
+        </div>
+        <div class="recon-row recon-difference" id="recDifferenceRow">
+          <span>Difference</span>
+          <strong id="recDifference">₹0.00</strong>
+        </div>
+
+        <div class="recon-message" id="recMessage" role="status">
+          <span class="recon-icon">{{ icon('alert', 18) }}</span>
+          <p id="recMessageText"></p>
+        </div>
+
+        <button class="btn btn-outline" type="button" id="recUpdateBtn" style="width: 100%; margin-top: 4px;">
+          {{ icon('copy', 15) }} Update actual cash balance
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="two-column" style="margin-top: 18px;">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Latest note count</h3><p>From your last physical cash count</p></div>
+      </div>
+      <div class="card-body">
+        <div class="denomination-grid">
+          {% for note in sample.cash.denominations %}
+          <div class="denomination">
+            <strong>{{ note.note }}</strong>
+            <span>{{ note.count }} notes</span>
+            <span class="small strong">{{ note.value|inr }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header"><div><h3>About physical cash</h3><p>Keeping cash separate makes reconciliation easier</p></div></div>
+      <div class="card-body" style="padding-top: 4px;">
+        <div class="setting-row"><div><strong>Opening balance</strong><small>Cash you started with</small></div><span class="strong" id="openingBalance">₹0.00</span></div>
+        <div class="setting-row"><div><strong>Recorded movements</strong><small>Received and spent entries</small></div><span class="strong" id="movementCount">0</span></div>
+        <div class="setting-row"><div><strong>Online money</strong><small>Bank and UPI activity lives elsewhere</small></div><a class="text-link" href="{{ url_for('main.banks') }}">View accounts</a></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add cash transaction -->
+  <div class="modal" id="cashEntryModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cashEntryTitle">
+      <div class="modal-header">
+        <div><h2 id="cashEntryTitle">Add cash transaction</h2><p>Record money entering or leaving your wallet</p></div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close dialog">{{ icon('x', 18) }}</button>
+      </div>
+      <form id="cashEntryForm" novalidate>
+        <div class="modal-body">
+          <div class="type-toggle" role="radiogroup" aria-label="Cash transaction type">
+            <label class="type-option"><input type="radio" name="cashType" value="in" checked /><span>{{ icon('arrow-down', 15) }} Cash Received</span></label>
+            <label class="type-option"><input type="radio" name="cashType" value="out" /><span>{{ icon('arrow-up', 15) }} Cash Spent</span></label>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="cashAmount">Amount <span class="required">*</span></label>
+              <input id="cashAmount" class="form-control" type="number" min="0.01" step="0.01" placeholder="0.00" />
+              <span class="error" id="cashAmountError" role="alert"></span>
+            </div>
+            <div class="field">
+              <label for="cashCategory">Category</label>
+              <select id="cashCategory" class="form-control"><option value="">Uncategorized</option></select>
+            </div>
+            <div class="field">
+              <label for="cashDate">Date <span class="required">*</span></label>
+              <input id="cashDate" class="form-control" type="date" />
+              <span class="error" id="cashDateError" role="alert"></span>
+            </div>
+            <div class="field field-full">
+              <label for="cashDescription">Description <span class="required">*</span></label>
+              <input id="cashDescription" class="form-control" placeholder="e.g. Tea and snacks" />
+              <span class="error" id="cashDescriptionError" role="alert"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" data-close-modal>Cancel</button>
+          <button class="btn" type="submit">Save cash entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update actual balance -->
+  <div class="modal" id="actualModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog modal-sm" role="dialog" aria-modal="true" aria-labelledby="actualModalTitle">
+      <div class="modal-header">
+        <div><h2 id="actualModalTitle">Update actual cash balance</h2><p>Count the notes and coins in your wallet</p></div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close dialog">{{ icon('x', 18) }}</button>
+      </div>
+      <form id="actualForm" novalidate>
+        <div class="modal-body">
+          <div class="field">
+            <label for="actualAmount">Actual cash in wallet <span class="required">*</span></label>
+            <input id="actualAmount" class="form-control" type="number" min="0" step="0.01" placeholder="0.00" />
+            <span class="error" id="actualAmountError" role="alert"></span>
+            <small>This only updates your count. It does not change recorded transactions.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" data-close-modal>Cancel</button>
+          <button class="btn" type="submit">Save count</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full cash history -->
+  <div class="modal" id="historyModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog modal-lg" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="modal-header">
+        <div><h2 id="historyModalTitle">Cash history</h2><p>Every physical cash movement you have recorded</p></div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close dialog">{{ icon('x', 18) }}</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Description</th><th>Category</th><th>Date</th><th>Type</th><th class="align-right">Amount</th></tr></thead>
+          <tbody id="historyRows"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.RUPEEVO_CASH = {{ {
+      'opening_balance': sample.cash.opening_balance,
+      'actual_balance': sample.cash.actual_balance,
+      'categories': sample.cash.categories,
+      'transactions': sample.cash.activity
+    }|tojson }};
+  </script>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/cash.js') }}"></script>
+{% endblock %}

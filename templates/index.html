@@ -1,0 +1,100 @@
+{% from "_macros.html" import icon %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rupeevo — Making Every Rupee Count</title>
+    <meta name="description" content="Rupeevo brings your cash, bank accounts, UPI transactions, income, expenses, budgets and savings together in one calm place." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+  <body class="landing-body">
+    <header class="landing-header">
+      <a href="{{ url_for('main.index') }}" class="brand-lockup">
+        <span class="brand-mark">₹</span>
+        <span class="brand-text">Rupeevo<small>Making Every Rupee Count</small></span>
+      </a>
+      <nav class="landing-nav">
+        <a href="#features">Features</a>
+        <a href="{{ url_for('main.reports') }}">Insights</a>
+        <a href="{{ url_for('main.db_test') }}">System status</a>
+        <a class="btn btn-sm" href="{{ url_for('auth.register') }}">Get started</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="landing-hero">
+        <div>
+          <span class="eyebrow">{{ icon('sparkles', 14) }} Your money, in one place</span>
+          <h1>Making every rupee <em>count.</em></h1>
+          <p class="landing-lede">
+            Rupeevo brings your cash, bank accounts, UPI activity, income,
+            expenses, budgets and savings goals into one clean, calm dashboard —
+            so you always know where you stand and what comes next.
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="{{ url_for('auth.register') }}">Create your account {{ icon('chevron-right', 15) }}</a>
+            <a class="btn btn-outline" href="{{ url_for('main.dashboard') }}">Explore the dashboard</a>
+          </div>
+          <p class="hero-note">{{ icon('check', 15) }} Free to use · Your data stays yours · Built for everyday India</p>
+        </div>
+
+        <div class="hero-preview" aria-hidden="true">
+          <div class="preview-card">
+            <div class="preview-top">
+              <div>
+                <span class="small muted">Total balance</span>
+                <div class="preview-balance">{{ sample.summary.balance|inr }}</div>
+              </div>
+              <span class="badge badge-emerald">{{ icon('arrow-up', 12) }} 12.4%</span>
+            </div>
+            <div class="preview-grid">
+              <div class="preview-tile"><span>Money in</span><strong class="text-emerald">{{ sample.summary.income|inr }}</strong></div>
+              <div class="preview-tile"><span>Money out</span><strong>{{ sample.summary.expenses|inr }}</strong></div>
+            </div>
+            <span class="small muted">Cash flow this month</span>
+            <div class="preview-bars">
+              <span style="height: 45%"></span><span style="height: 68%"></span>
+              <span style="height: 54%"></span><span style="height: 76%"></span>
+              <span style="height: 62%"></span><span style="height: 88%"></span>
+              <span style="height: 70%"></span><span style="height: 95%"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="landing-features" id="features">
+        <h2>Everything you need to stay in control</h2>
+        <p>One thoughtful workspace for the money decisions you make every day.</p>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon">{{ icon('wallet', 20) }}</span>
+            <h3>Cash & accounts</h3>
+            <p>Track notes in your wallet and every bank or UPI balance side by side.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">{{ icon('swap', 20) }}</span>
+            <h3>Transactions</h3>
+            <p>See income, expenses and transfers clearly categorized and easy to find.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">{{ icon('pie', 20) }}</span>
+            <h3>Budgets</h3>
+            <p>Set monthly limits and get a gentle nudge before you overspend.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">{{ icon('sparkles', 20) }}</span>
+            <h3>Smart insights</h3>
+            <p>Understand habits, spot patterns and make your next move with confidence.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="landing-footer">© 2026 Rupeevo · Making Every Rupee Count</footer>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

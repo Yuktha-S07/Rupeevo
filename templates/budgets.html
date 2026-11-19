@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, progress %}
+
+{% block content %}
+  {% set total_limit = sample.budgets|sum(attribute='limit') %}
+  {% set total_spent = sample.budgets|sum(attribute='spent') %}
+
+  <div class="page-header">
+    <div>
+      <h1>Budgets</h1>
+      <p>Plan your month, then spend with confidence</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" type="button">{{ icon('calendar', 15) }} November 2026</button>
+      <button class="btn btn-sm" type="button">{{ icon('plus', 15) }} Set new budget</button>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon">{{ icon('pie', 20) }}</span></div>
+      <p class="stat-label">Total budget</p>
+      <p class="stat-value">{{ total_limit|inr }}</p>
+      <p class="stat-note">Across {{ sample.budgets|length }} categories</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-amber">{{ icon('bag', 20) }}</span></div>
+      <p class="stat-label">Spent so far</p>
+      <p class="stat-value">{{ total_spent|inr }}</p>
+      <p class="stat-note">{{ total_spent|percent(total_limit) }}% of your plan used</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-violet">{{ icon('shield', 20) }}</span></div>
+      <p class="stat-label">Remaining</p>
+      <p class="stat-value">{{ (total_limit - total_spent)|inr }}</p>
+      <p class="stat-note">Safe to spend this month</p>
+    </div>
+  </div>
+
+  <div class="two-column">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Category budgets</h3><p>Track each envelope at a glance</p></div>
+        <button class="btn btn-ghost btn-sm" type="button">{{ icon('filter', 16) }}</button>
+      </div>
+      <div class="card-body" style="padding-top: 4px;">
+        {% for item in sample.budgets %}
+        {% set pct = item.spent|percent(item.limit) %}
+        <div class="budget-row">
+          <div class="budget-head">
+            <span class="tx-icon {{ item.color }}">{{ icon(item.icon, 16) }}</span>
+            <strong>{{ item.category }}</strong>
+            <span class="amount">{{ item.spent|inr }} <span class="muted">/ {{ item.limit|inr }}</span></span>
+          </div>
+          {{ progress(item.spent, item.limit, item.color) }}
+          <div class="budget-meta">
+            <span>{{ pct }}% used · {{ (item.limit - item.spent)|inr }} left</span>
+            <button class="text-link" type="button" style="border:0;background:none;cursor:pointer;">Edit</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card-header"><div><h3>Budget health</h3><p>How your month is shaping up</p></div></div>
+        <div class="card-body" style="padding-top: 4px;">
+          <div class="setting-row">
+            <div><strong>On track categories</strong><small>4 of 5 are within plan</small></div>
+            <span class="badge badge-emerald">Good</span>
+          </div>
+          <div class="setting-row">
+            <div><strong>Closest to limit</strong><small>Entertainment · 83% used</small></div>
+            <span class="badge badge-warning">Watch</span>
+          </div>
+          <div class="setting-row">
+            <div><strong>Daily spend allowance</strong><small>For the remaining 9 days</small></div>
+            <span class="strong">{{ 9280|inr }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div><h3>Simple tip</h3></div></div>
+        <div class="card-body">
+          <div class="insight-card insight-info" style="padding: 0; border: 0; box-shadow: none;">
+            <span class="insight-icon">{{ icon('sparkles', 19) }}</span>
+            <div>
+              <h3>Round up your spending</h3>
+              <p>Moving small leftover amounts into savings each week could add roughly ₹3,200 to your emergency fund this year.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}

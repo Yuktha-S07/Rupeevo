@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Settings</h1>
+      <p>Make Rupeevo feel like yours</p>
+    </div>
+  </div>
+
+  <div class="two-column">
+    <div class="stack">
+      <section class="card">
+        <div class="card-header"><div><h3>Preferences</h3><p>Language, currency and display</p></div></div>
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="field">
+              <label for="currency">Base currency</label>
+              <select id="currency" class="form-control"><option>INR — Indian Rupee (₹)</option><option>USD — US Dollar ($)</option></select>
+            </div>
+            <div class="field">
+              <label for="week-start">Week starts on</label>
+              <select id="week-start" class="form-control"><option>Monday</option><option>Sunday</option></select>
+            </div>
+            <div class="field">
+              <label for="date-format">Date format</label>
+              <select id="date-format" class="form-control"><option>18 Nov 2026</option><option>11/18/2026</option></select>
+            </div>
+            <div class="field">
+              <label for="theme">Appearance</label>
+              <select id="theme" class="form-control"><option>Light · Warm minimal</option><option>System default</option></select>
+            </div>
+          </div>
+          <button class="btn btn-sm" type="button">Save preferences</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div><h3>Security</h3><p>Keep your account protected</p></div></div>
+        <div class="form-section">
+          <div class="setting-row"><div><strong>Password</strong><small>Last changed 3 months ago</small></div><button class="btn btn-outline btn-sm" type="button">Change</button></div>
+          <div class="setting-row"><div><strong>Two-factor authentication</strong><small>Add an extra layer of safety</small></div>{{ '<span class="badge badge-emerald">Enabled</span>'|safe }}</div>
+          <div class="setting-row"><div><strong>Active sessions</strong><small>2 devices signed in</small></div><button class="btn btn-outline btn-sm" type="button">Review</button></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card-header"><div><h3>Notifications</h3><p>Choose what you want to hear about</p></div></div>
+        <div class="form-section" style="padding-top: 4px;">
+          <div class="setting-row"><div><strong>Budget alerts</strong><small>When a category crosses 80%</small></div><label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Upcoming payments</strong><small>3 days before a bill is due</small></div><label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Weekly summary</strong><small>A calm recap every Sunday</small></div><label class="toggle"><input type="checkbox" /><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Smart insights</strong><small>New tips and spending patterns</small></div><label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div><h3>Your data</h3><p>You stay in control</p></div></div>
+        <div class="form-section" style="padding-top: 4px;">
+          <div class="setting-row"><div><strong>Export your data</strong><small>Download everything as a CSV file</small></div><button class="btn btn-outline btn-sm" type="button">{{ icon('download', 14) }} Export</button></div>
+          <div class="setting-row"><div><strong>Connected accounts</strong><small>4 accounts linked</small></div><a class="text-link" href="{{ url_for('main.banks') }}">Manage</a></div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}

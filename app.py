@@ -1,5 +1,6 @@
 import os
 import secrets
+from datetime import timedelta
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -16,6 +17,7 @@ csrf = CSRFProtect()
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or secrets.token_hex(32)
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
     csrf.init_app(app)
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)

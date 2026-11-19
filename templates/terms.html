@@ -1,0 +1,34 @@
+{% extends "auth_base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Terms and Conditions{% endblock %}
+
+{% block aside_content %}
+<h1>Clear terms. No fine print surprises.</h1>
+<p>How Rupeevo handles your account, your data and your trust.</p>
+{% endblock %}
+
+{% block auth_content %}
+<span class="eyebrow">{{ icon('shield', 13) }} The basics</span>
+<h2>Terms and Conditions</h2>
+<p class="auth-subtitle">Last updated 19 November 2026</p>
+
+<div class="terms-body">
+  <h3>1. Your account</h3>
+  <p>You are responsible for keeping your sign-in details secure and for any activity that happens under your account. Tell us if you notice anything unusual.</p>
+
+  <h3>2. Your data</h3>
+  <p>Rupeevo stores the information you enter to provide the service. We do not sell your personal financial data. You can export it from Settings at any time.</p>
+
+  <h3>3. Financial information</h3>
+  <p>Rupeevo helps you organize and understand your money. It does not provide financial advice, and the sample figures shown in the interface are for demonstration only.</p>
+
+  <h3>4. Availability</h3>
+  <p>We work hard to keep the service available, but features may change as Rupeevo improves. We will do our best to give notice of meaningful changes.</p>
+
+  <h3>5. Contact</h3>
+  <p>Questions about these terms? Reach out to us through the app and we will be happy to help.</p>
+</div>
+
+<a class="btn auth-submit" href="{{ url_for('auth.register') }}">Back to registration</a>
+{% endblock %}

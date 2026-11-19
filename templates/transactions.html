@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Transactions</h1>
+      <p>View, organize and manage every rupee that moves</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" id="exportBtn" type="button">{{ icon('download', 15) }} Export CSV</button>
+      <button class="btn btn-sm" id="addTransactionBtn" type="button">{{ icon('plus', 15) }} Add transaction</button>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon">{{ icon('arrow-down', 20) }}</span></div>
+      <p class="stat-label">Total income</p>
+      <p class="stat-value text-emerald" id="sumIncome">₹0.00</p>
+      <p class="stat-note">Across all transactions</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-rose">{{ icon('arrow-up', 20) }}</span></div>
+      <p class="stat-label">Total expenses</p>
+      <p class="stat-value" id="sumExpense">₹0.00</p>
+      <p class="stat-note">Across all transactions</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-violet">{{ icon('wallet', 20) }}</span></div>
+      <p class="stat-label">Net flow</p>
+      <p class="stat-value" id="sumNet">₹0.00</p>
+      <p class="stat-note">Income minus expenses</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon stat-icon-blue">{{ icon('swap', 20) }}</span></div>
+      <p class="stat-label">Transactions</p>
+      <p class="stat-value" id="sumCount">0</p>
+      <p class="stat-note" id="uncategorizedNote">All categorized</p>
+    </div>
+  </div>
+
+  <div class="notice" id="uncategorizedNotice" hidden>
+    <span class="notice-icon">{{ icon('alert', 17) }}</span>
+    <span id="uncategorizedText">Some transactions need a category.</span>
+    <button class="text-link" type="button" id="showUncategorized">Show them</button>
+  </div>
+
+  <section class="card">
+    <div class="tabs" role="tablist" aria-label="Transaction type">
+      <button class="tab active" type="button" role="tab" data-tab="all" aria-selected="true">All <span class="tab-count" id="tabAllCount">0</span></button>
+      <button class="tab" type="button" role="tab" data-tab="income" aria-selected="false">Income <span class="tab-count" id="tabIncomeCount">0</span></button>
+      <button class="tab" type="button" role="tab" data-tab="expense" aria-selected="false">Expenses <span class="tab-count" id="tabExpenseCount">0</span></button>
+    </div>
+
+    <div class="toolbar toolbar-filters">
+      <label class="toolbar-search">
+        {{ icon('search', 16) }}
+        <input type="search" id="searchInput" placeholder="Search name, description or notes..." aria-label="Search transactions" />
+      </label>
+      <label class="filter-field"><span>From</span><input type="date" id="filterFrom" aria-label="From date" /></label>
+      <label class="filter-field"><span>To</span><input type="date" id="filterTo" aria-label="To date" /></label>
+      <label class="filter-field"><span>Type</span>
+        <select id="filterType" aria-label="Filter by type"><option value="">All types</option><option value="income">Income</option><option value="expense">Expense</option></select>
+      </label>
+      <label class="filter-field"><span>Category</span><select id="filterCategory" aria-label="Filter by category"></select></label>
+      <label class="filter-field"><span>Method</span><select id="filterMethod" aria-label="Filter by payment method"></select></label>
+      <label class="filter-field"><span>Account</span><select id="filterAccount" aria-label="Filter by account"></select></label>
+      <button class="btn btn-outline btn-sm" type="button" id="clearFilters">Clear</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table transactions-table">
+        <thead>
+          <tr>
+            <th>Transaction</th>
+            <th class="align-right">Amount</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Payment method</th>
+            <th>Account</th>
+            <th>Type</th>
+            <th class="align-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="transactionRows"></tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span id="resultCount">Showing 0 transactions</span>
+      <span class="small muted">Changes are UI-only and reset on reload</span>
+    </div>
+  </section>
+
+  <!-- Add / Edit transaction -->
+  <div class="modal" id="transactionModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog modal-lg" role="dialog" aria-modal="true" aria-labelledby="transactionModalTitle">
+      <div class="modal-header">
+        <div>
+          <h2 id="transactionModalTitle">Add transaction</h2>
+          <p>Record a new income or expense entry</p>
+        </div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close dialog">{{ icon('x', 18) }}</button>
+      </div>
+
+      <form id="transactionForm" novalidate>
+        <input type="hidden" id="editId" />
+        <div class="modal-body">
+          <div class="type-toggle" role="radiogroup" aria-label="Transaction type">
+            <label class="type-option"><input type="radio" name="type" value="expense" checked /><span>{{ icon('arrow-up', 15) }} Expense</span></label>
+            <label class="type-option"><input type="radio" name="type" value="income" /><span>{{ icon('arrow-down', 15) }} Income</span></label>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="txAmount">Amount <span class="required">*</span></label>
+              <input id="txAmount" class="form-control" type="number" min="0.01" step="0.01" placeholder="0.00" />
+              <span class="error" id="txAmountError" role="alert"></span>
+            </div>
+            <div class="field">
+              <label for="txDescription">Description <span class="required">*</span></label>
+              <input id="txDescription" class="form-control" placeholder="e.g. Grocery shopping" />
+              <span class="error" id="txDescriptionError" role="alert"></span>
+            </div>
+            <div class="field">
+              <label for="txCategory">Category</label>
+              <select id="txCategory" class="form-control"><option value="">Uncategorized</option></select>
+              <span class="error" id="txCategoryError" role="alert"></span>
+            </div>
+            <div class="field">
+              <label for="txDate">Date <span class="required">*</span></label>
+              <input id="txDate" class="form-control" type="date" />
+              <span class="error" id="txDateError" role="alert"></span>
+            </div>
+            <div class="field">
+              <label for="txMode">Payment method <span class="required">*</span></label>
+              <select id="txMode" class="form-control"><option value="Cash">Cash</option><option value="Online">Online</option></select>
+            </div>
+            <div class="field" id="txOnlineMethodField" hidden>
+              <label for="txOnlineMethod">Online method</label>
+              <select id="txOnlineMethod" class="form-control"></select>
+            </div>
+            <div class="field" id="txAccountField" hidden>
+              <label for="txAccount">Bank account</label>
+              <select id="txAccount" class="form-control"></select>
+              <span class="error" id="txAccountError" role="alert"></span>
+            </div>
+            <div class="field field-full">
+              <label for="txNotes">Notes (optional)</label>
+              <textarea id="txNotes" class="form-control" rows="2" placeholder="Anything worth remembering..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" data-close-modal>Cancel</button>
+          <button class="btn" type="submit" id="saveTransactionBtn">Save transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View details -->
+  <div class="modal" id="viewModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="viewModalTitle">
+      <div class="modal-header">
+        <div><h2 id="viewModalTitle">Transaction details</h2><p>Everything recorded for this entry</p></div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close dialog">{{ icon('x', 18) }}</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-hero">
+          <span class="detail-amount" id="viewAmount">₹0.00</span>
+          <span id="viewTypeBadge"></span>
+        </div>
+        <dl class="detail-list" id="viewDetails"></dl>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation -->
+  <div class="modal" id="deleteModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog modal-sm" role="alertdialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalText">
+      <div class="modal-body modal-body-centered">
+        <span class="confirm-icon confirm-danger">{{ icon('alert', 24) }}</span>
+        <h2 id="deleteModalTitle">Delete transaction?</h2>
+        <p id="deleteModalText">This transaction will be removed from your list.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" data-close-modal>Cancel</button>
+        <button class="btn btn-danger" type="button" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.RUPEEVO_TRANSACTIONS = {{ sample.transactions|tojson }};
+    window.RUPEEVO_OPTIONS = {{ {
+      'categories': sample.transaction_categories,
+      'methods': sample.transaction_methods,
+      'accounts': sample.transaction_accounts
+    }|tojson }};
+  </script>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/transactions.js') }}"></script>
+{% endblock %}

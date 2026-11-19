@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>Smart Insights</h1>
+      <p>Small signals that help you make better money decisions</p>
+    </div>
+    <div class="page-actions">
+      <span class="badge badge-emerald">{{ icon('sparkles', 13) }} Updated today</span>
+    </div>
+  </div>
+
+  <div class="insight-grid">
+    {% for insight in sample.insights %}
+    <article class="insight-card insight-{{ insight.tone }}">
+      <span class="insight-icon">{{ icon(insight.icon, 20) }}</span>
+      <div>
+        <h3>{{ insight.title }}</h3>
+        <p>{{ insight.text }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <div class="two-column" style="margin-top: 18px;">
+    <section class="card">
+      <div class="card-header">
+        <div><h3>Your spending mix</h3><p>Where this month's money went</p></div>
+      </div>
+      <div class="chart-wrap" style="height: 230px;"><canvas id="spendingDonut"></canvas></div>
+      <div class="chart-legend" style="justify-content: center;">
+        <span class="legend-item"><span class="legend-swatch"></span> Food</span>
+        <span class="legend-item"><span class="legend-swatch blue"></span> Shopping</span>
+        <span class="legend-item"><span class="legend-swatch violet"></span> Transport</span>
+        <span class="legend-item"><span class="legend-swatch amber"></span> Utilities</span>
+        <span class="legend-item"><span class="legend-swatch" style="background: var(--rose);"></span> Entertainment</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header"><div><h3>Focus for November</h3><p>Three things worth your attention</p></div></div>
+      <div class="card-body" style="padding-top: 4px;">
+        <div class="setting-row"><div><strong>Keep dining spend under ₹9,000</strong><small>You are ₹580 away from this goal</small></div>{{ badge('On track', 'emerald') }}</div>
+        <div class="setting-row"><div><strong>Add ₹2,000 more to Japan Trip</strong><small>Puts you back on schedule for Dec 2027</small></div>{{ badge('Suggestion', 'blue') }}</div>
+        <div class="setting-row"><div><strong>Review your Netflix plan</strong><small>Unused 12 days this month</small></div>{{ badge('Optional', 'neutral') }}</div>
+        <div class="setting-row"><div><strong>Complete your cash count</strong><small>Last counted 16 Nov 2026</small></div>{{ badge('Reminder', 'warning') }}</div>
+      </div>
+    </section>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

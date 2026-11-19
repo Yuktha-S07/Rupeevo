@@ -1,0 +1,62 @@
+{% extends "auth_base.html" %}
+{% from "_macros.html" import icon %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block aside_content %}
+<h1>Welcome back to a clearer money life.</h1>
+<p>Pick up where you left off — your balances, budgets and goals are waiting.</p>
+<div class="auth-highlights">
+  <span>{{ icon('lock', 15) }} Secure sign in</span>
+  <span>{{ icon('chart', 15) }} Live overview</span>
+  <span>{{ icon('sparkles', 15) }} Smart insights</span>
+</div>
+{% endblock %}
+
+{% block auth_content %}
+<span class="eyebrow">{{ icon('lock', 13) }} Secure access</span>
+<h2>Sign in to Rupeevo</h2>
+<p class="auth-subtitle">Enter your details to continue to your dashboard.</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <p class="flash flash-{{ category }}" role="alert">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+
+  <div class="field">
+    {{ form.identifier.label }}
+    {{ form.identifier(autocomplete="username", placeholder="you@example.com or your username", aria_describedby="identifier-error", aria_invalid="true" if form.identifier.errors else "false") }}
+    <span id="identifier-error" class="error" role="alert">{% for error in form.identifier.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="field">
+    {{ form.password.label }}
+    <div class="password-field">
+      {{ form.password(autocomplete="current-password", placeholder="Enter your password", aria_describedby="password-error", aria_invalid="true" if form.password.errors else "false") }}
+      <button class="password-toggle" type="button" data-target="password" aria-label="Show password" aria-pressed="false">Show</button>
+    </div>
+    <span id="password-error" class="error" role="alert">{% for error in form.password.errors %}{{ error }}{% endfor %}</span>
+  </div>
+
+  <div class="auth-links">
+    <label class="check-row">
+      {{ form.remember }}
+      <span>Remember me</span>
+    </label>
+    <a class="text-link" href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+  </div>
+
+  {{ form.submit(class="btn auth-submit") }}
+</form>
+
+<div class="auth-divider"><span>New to Rupeevo?</span></div>
+<p class="auth-switch">Create an account and start making every rupee count. <a href="{{ url_for('auth.register') }}">Sign up</a></p>
+{% endblock %}
